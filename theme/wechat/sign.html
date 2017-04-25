@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>点餐系统</title>
+	<style type="text/css">
+		body,h4,p {
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			font-family: 'Microsoft YaHei',Arial,sans-serif;
+			font-size: 16px;
+			color: #666;
+		}
+		h4 {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			line-height: 3rem;
+			text-align: center;
+			font-weight: normal;
+			font-size: 2rem;
+		}
+		p {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			right: 0;
+			line-height: 1.5rem;
+			text-align: center;
+			font-size: 1.125rem;
+			color: #f00;
+		}
+		.btn {
+			position: absolute;
+			bottom: 10%;
+			left: 0;
+			right: 0;
+			text-align: center;
+		}
+		button {
+			padding: .25rem .5rem;
+			border: none;
+			border-radius: .25rem;
+			background-color: #f00;
+			font-size: 1.5rem;
+			color: #fff;
+		}
+	</style>
+</head>
+<body>
+	<h4>签到处</h4>
+	<p>未签到</p>
+	<div class="btn">
+		<button id="btn">签到</button>
+	</div>
+	
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/zepto.min.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/fastclick.min.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/jweixin-1.0.0.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/global.min.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+	wx.config({
+	    debug: false,
+	    appId: '<?php echo $signPackage["appId"];?>',
+	    timestamp: <?php echo $signPackage["timestamp"];?>,
+	    nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+	    signature: '<?php echo $signPackage["signature"];?>',
+	    jsApiList: [
+	    	'checkJsApi',
+	        'onMenuShareTimeline',
+	        'onMenuShareAppMessage',
+	        'onMenuShareQQ',
+	        'onMenuShareWeibo',
+	        'hideMenuItems',
+	        'showMenuItems',
+	        'hideAllNonBaseMenuItem',
+	        'showAllNonBaseMenuItem',
+	        'translateVoice',
+	        'startRecord',
+	        'stopRecord',
+	        'onRecordEnd',
+	        'playVoice',
+	        'pauseVoice',
+	        'stopVoice',
+	        'uploadVoice',
+	        'downloadVoice',
+	        'chooseImage',
+	        'previewImage',
+	        'uploadImage',
+	        'downloadImage',
+	        'getNetworkType',
+	        'openLocation',
+	        'getLocation',
+	        'hideOptionMenu',
+	        'showOptionMenu',
+	        'closeWindow',
+	        'scanQRCode',
+	        'chooseWXPay',
+	        'openProductSpecificView',
+	        'addCard',
+	        'chooseCard',
+	        'openCard'
+	    ]
+	  });
+  wx.ready(function () {
+     document.querySelector('#btn').onclick = function () {
+	    wx.getLocation({
+	      success: function (res) {
+	        alert(JSON.stringify(res));
+	      }
+	    });
+	  };
+  });
+</script>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title><?php echo lang('添加角色');?></title>
+        <?php require_once 'common.html';?>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('添加角色');?></h1>
+                    </div><!-- /.page-header -->
+                    
+                    <div class="form-horizontal">
+                        <form method="post" action="/admin/role/add" id="role-add">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('角色名称');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="name" class="form-control" placeholder="<?php echo lang('角色名称');?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('权重');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="weight" class="form-control" placeholder="<?php echo lang('权重');?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <?php foreach($temproles as $k=>$roles):?>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo $k;?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <?php foreach ($roles as $rk=>$role):?>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="field_role_permission[]" value="<?php echo $rk;?>"> <?php echo $role['title'];?>
+                                            </label>
+                                        <?php endforeach;?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach;?>
+                            <div class="clearfix form-actions">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button type="button" class="btn btn-btn role-add">
+                                        <i class="fa fa-check"></i>
+                                        <?php echo lang('提交');?>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- /.form-horizontal -->
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+
+        <script type="text/javascript">
+            $(function(){
+                $(".role-add").click(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/admin/role/add",
+                        data: $("#role-add").serialize(),
+                        dataType: "json",
+                        success: function(data){
+                          if (data.status=="success") {
+                              location.href="/admin/role/search";
+                          } else {
+                             alert(data.msg);
+                             return false;
+                          }
+                        }
+                    });
+                });
+            });
+        </script>

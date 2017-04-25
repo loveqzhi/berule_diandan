@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><?php echo lang('微信账号配置');?></title>
+<?php require_once 'common.html';?>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('微信账号配置');?></h1>
+                    </div><!-- /.page-header -->
+                    
+                    <div class="form-horizontal">
+                        <form method="post" action="/wechat/setting/save" id="weixin-save">
+                            <input type="hidden" name="type" value="2">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('公众号名称');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" id="name" name="name" class="form-control" placeholder="食府第一号" value="<?php echo $wechat['name'];?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">Appid</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" id="appid" name="appid" class="form-control" value="<?php echo $wechat['appid'];?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">Appsecret</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" id="appsecret" name="appsecret" class="form-control" value="<?php echo $wechat['appsecret'];?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">Token</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="token" class="form-control" value="<?php echo $wechat['token'];?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">AES密钥</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="encodingaeskey" class="form-control" value="<?php echo $wechat['encodingaeskey'];?>"/>
+                                    </div>
+                                </div>
+                            </div>                           
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">回调url</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="url" class="form-control" placeholder="mycom" value="<?php echo $wechat['url'];?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">&nbsp;</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <?php echo $HOST;?>/api/wechat/xxx  &nbsp;&nbsp;(注意：根据个人喜好填写 xxx 部分。)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('自定义菜单');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <textarea class="form-control" rows="20" name="options[menu]"><?php echo $wechat['options']['menu'];?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix form-actions">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button type="button" class="btn btn-btn weixin-save">
+                                        <i class="fa fa-check"></i>
+                                        <?php echo lang('保存');?>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- /.form-horizontal -->
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+
+        <script type="text/javascript">
+            $(function(){
+                $(".weixin-save").click(function(){
+                    var appid = $("#appid").val();
+                    var appsecret = $("#appsecret").val();
+                    if(appid=='') {
+                        alert('Appid必须填写');
+                    }
+                    if(appsecret=='') {
+                        alert('凭证秘钥必须填写');
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/admin/wechat/setting/save",
+                        data: $("#weixin-save").serialize(),
+                        dataType: "json",
+                        success: function(data){
+                          if (data.status=="success") {
+                              alert("更新成功");
+                              location.href="/admin/wechat/setting";
+                          } else {
+                             alert(data.msg);
+                             return false;
+                          }
+                        }
+                    });
+                });
+            });
+        </script>

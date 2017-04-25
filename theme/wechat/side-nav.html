@@ -1,0 +1,15 @@
+<div class="side-nav" id="side-nav">
+        <?php $wx_authen_user = session()->get('wx_authentication');?>
+		<div class="snav-header">
+			<div class="head-portrait">
+				<img src="<?php echo $wx_authen_user['userinfo']->headimgurl;?>">
+			</div>
+			<h4><?php echo $wx_authen_user['userinfo']->nickname;?></h4>
+		</div>
+
+		<ul class="snav-list">
+            <li class="snav-out"><a href="/wechat/mytakeout"><i class="iconfont">L</i> 我的外卖</a></li>
+			<li class="snav-book"><a href="/wechat/mybook"><i class="iconfont">K</i> 我的预定</a></li>			
+			<li class="snav-address"><a href="/wechat/myaddress"><i class="iconfont">M</i> 地址管理</a></li>
+		</ul>
+	</div>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title><?php echo lang('点餐系统');?></title>
+</head>
+<body>
+	<div class="wrap h-bottom" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+					<i class="iconfont">H</i><?php echo lang('返回');?>
+				</div>
+				<h4 class="one-line"><?php echo $shop->name;?></h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+
+		<div id="index-section">
+			<form id="book-register">
+				<input type="hidden" name="shop_id" value="<?php echo $shop->id;?>">
+				<div class="book-select-area">
+					<div class="book-select">
+						<input type="hidden" name="bookdate" id="inputdate">
+						<p id="book-date"><?php echo lang('日期');?></p>
+						<div class="book-option" id="book-date-option" data-type="date">
+							<ul></ul>
+						</div>
+					</div>
+					<div class="book-select">
+						<input type="hidden" name="human" id="inputhuman">
+						<p id="book-human"><?php echo lang('人数');?></p>
+						<div class="book-option" id="book-human-option" data-type="human">
+							<ul>
+								<li data-value="2人">散座：1 - 2 人</li>
+								<li data-value="4人">散座：3 - 4 人</li>
+								<li data-value="6人">散座：5 - 6 人</li>
+								<li data-value="8人">散座：7 - 8 人</li>
+								<li data-value="8人以上">散座：8人以上</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="book-radio-area">
+					<h4>用餐时间：</h4>
+					<div class="book-radio-group">
+						<div class="col-4">
+							<input type="radio" name="booktime" value="11:00-12:00">
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="12:00-13:00" checked>
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="13:00-14:00">
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="14:00-15:00">
+						</div>
+					</div>
+					<div class="book-radio-group">
+						<div class="col-4">
+							<input type="radio" name="booktime" value="17:00-18:00">
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="18:00-19:00">
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="19:00-20:00">
+						</div>
+						<div class="col-4">
+							<input type="radio" name="booktime" value="20:00-21:00">
+						</div>
+					</div>
+				</div>
+
+				<div class="book-input-area">
+					<input type="text" name="name" placeholder="姓名">
+					<input type="tel" name="telephone" placeholder="电话">
+				</div>
+
+				<div class="book-remark-area">
+					<p>备注：预定点餐需要支付定金哦。</p>
+					<ul>
+						<li><p>请准时到店消费，使用贝螺点餐时预定定金可直接抵扣消费金额。</p></li>
+						<li><p>预定金额不找零，不退款。</p></li>
+						<li><p>如未准时到店消费，2小时后，预定取消，定金不予退还。</p></li>
+						<li><p>如存在商家优惠活动，具体规则请参照商家说明。</p></li>
+					</ul>
+				</div>
+
+				<div class="btn-area book-btn-area">
+					<input type="button" value="确认预定" id="book-btn">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<?php include 'side-nav.html';?>
+
+	<?php include 'footer.html';?>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/dBook.min.js?v=06031548"></script>
+</body>
+</html>

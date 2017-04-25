@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php require_once 'common.html';?>
+    <title><?php echo lang('外卖预定');?></title>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('外卖预订');?></h1>
+                    </div><!-- /.page-header -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="/admin/takeout/search?status=1" class="btn btn-btn btn-add"><?php echo lang('未处理');?></a>&nbsp;&nbsp;
+                            <a href="/admin/takeout/search?status=2" class="btn btn-btn btn-add"><?php echo lang('已审核');?></a>&nbsp;&nbsp;
+                            <a href="/admin/takeout/search?status=3" class="btn btn-btn btn-add"><?php echo lang('已送出');?></a>&nbsp;&nbsp;
+                            <a href="/admin/takeout/search?status=5" class="btn btn-btn btn-add"><?php echo lang('已取消');?></a>&nbsp;&nbsp;
+                            <a href="/admin/takeout/search?status=4" class="btn btn-btn btn-add"><?php echo lang('已完成');?></a>&nbsp;&nbsp;
+                            <div class="pagination-right">
+                                <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/takeout/search?status='.$status));?>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th><?php echo lang('状态');?></th>
+                                        <th><?php echo lang('日期');?></th>
+                                        <th><?php echo lang('用户');?></th>
+                                        <th><?php echo lang('姓名');?></th>
+                                        <th><?php echo lang('电话');?></th>
+                                        <th><?php echo lang('地址');?></th>                                      
+                                        <th><?php echo lang('操作');?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($list['data'] as $k=>$data):?>
+                                    <tr>
+                                        <td><?php switch ($data->status) {
+                                            case '1':
+                                                echo lang('待处理');
+                                                break;
+                                            case '2':
+                                                echo lang('已审核');                                                
+                                                break;
+                                            case '3':
+                                                echo lang('已送出');                      
+                                                break;
+                                            case '4':
+                                                echo lang('已完成');
+                                                break;
+                                            case '5':
+                                                echo lang('我删除');
+                                                break;
+                                            case '0':
+                                                echo lang('用户删除');
+                                                break;
+                                        }?></td>
+                                        <td><?php echo date('n月j日 G:i',$data->created);?></td>
+                                        <td><img src="<?php echo $data->headimgurl;?>" style="max-width:50px;"></td>
+                                        <td><?php echo $data->name;?></td>
+                                        <td><?php echo $data->telephone;?></td>
+                                        <td><?php echo $data->address;?></td>                                       
+                                        <td>
+                                            <?php if (!empty($data->field_takeout_order)):?>
+                                            <a href="/admin/takeout/detail/<?php echo $data->id;?>" class="btn-default btn-sm">
+                                                <i class="fa fa-bars"></i> <?php echo lang('详情');?>
+                                            </a>
+                                            <?php endif;?>
+                                            <a href="javascript:void(0)" class="sendwechat" data-openid="<?php echo $data->openid;?>" >
+                                                 <i class="fa fa-weixin"></i> <?php echo lang('发消息');?>
+                                            </a>
+                                            <a href="/admin/takeout/delete/<?php echo $data->id;?>" class="btn-default btn-sm confirm">
+                                                <i class="fa fa-times"></i> <?php echo lang('删除');?>
+                                            </a>
+                                            
+                                        </td>
+                                    </tr>
+                                    <?php endforeach;?>
+                                </tbody>
+                                
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th colspan="7" style="text-align:center;">
+                                         <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/takeout/search?status='.$status));?>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>                        
+                    </div>
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        <!-- Modal -->
+		<div class="modal fade" id="sendWechat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" style="width:525px">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title"> <?php echo lang('通知排队者');?></h4>
+			  </div>
+			  <div class="modal-body" style="padding-bottom:2px">
+			  <form  class="form-horizontal" id="sendform" role="form" method="post" >
+				<input type="hidden" name="openid" id="openid">
+				<div class="form-group">
+					<label class="col-sm-2 control-label"><?php echo lang('发送内容');?></label>
+					<div class="col-sm-10">
+						<textarea class="form-control" name="msg" id="msg"></textarea>
+					</div>
+				</div>
+			 			
+			  </div>
+			  <div class="modal-footer">        
+				<button type="button" class="btn btn-primary" id="sendmessage"><?php echo lang('发送');?></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><?php echo lang('取消');?></button>
+			  </div>
+			  </form>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+        
+        <?php require_once 'footer.html';?>
+
+    <script>
+    $(function(){
+        setInterval(function(){
+            location.reload();
+        },50000);
+        $(".sendwechat").click(function(){
+            $("#openid").val($(this).data('openid'));
+            $("#sendWechat").modal();
+        });
+        $("#sendmessage").click(function(){       
+            $.ajax({
+                type: "POST",
+                url: "/admin/wechat/sendmessage",
+                data: $("#sendform").serialize(),
+                dataType: "json",
+                success: function(data){
+                  if (data.status=="success") {
+
+                  } else {
+                     alert(data.msg);
+                     return false;
+                  }
+                }
+            });
+            $("#openid").val('');
+            $("#msg").val('');
+            $("#sendWechat").modal('hide');
+        });
+    });
+    </script>

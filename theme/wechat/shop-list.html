@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<link rel="stylesheet" type="text/css" href="/theme/wechat/assets/plugin/rateit/rateit.css">
+	<title>点餐系统</title>
+</head>
+<body class="chose">
+	<div class="header">
+		<div class="header-bar">
+			<div class="go-back" id="go-back">
+				<i class="iconfont">H</i>返回
+			</div>
+			<h4 class="one-line">餐厅 <em>上海</em></h4>
+			<div class="search-btn" id="search-btn">
+				<i class="iconfont">I</i>
+			</div>
+		</div>
+		<input type="hidden"  id="dist_id" value="<?php echo $dist_id;?>">
+		<div class="chose-area">
+			<div class="rest-select-btn classify" data-select="classify">
+				<p><?php echo isset($shop_category[$category])?$shop_category[$category]:'全部分类';?></p>
+			</div>
+			<div class="rest-select-btn position" data-select="position">
+				<p><?php 
+                    if ($street) {
+                        foreach($dists as $d) {
+                            foreach($d->child as $c) {
+                                if ($c->id == $street) {
+                                    echo $c->name;
+                                }
+                            }
+                        }
+                    }
+                    elseif ($dist) {
+                        foreach($dists as $d) {
+                            if ($d->id == $dist) { 
+                                echo $d->name;
+                            }
+                        }
+                    } else { echo '全城';}
+                ?></p>
+			</div>
+			<div class="rest-select-btn condition" data-select="condition">
+				<p>智能顺序</p>
+			</div>
+		</div>
+
+		<form action="/wechat/shop" method="get">
+			<div class="search-area" id="search-area">
+				<div class="search-back" id="search-back">
+					<i class="iconfont">H</i>
+				</div>
+				<div class="input-area">
+					<input type="search" name="name" id="search-area-input" placeholder="输入餐厅名">
+					<!-- 其他的条件值 -->				
+			        <input type="hidden" name="category" id="category" value="<?php echo ($category)?$category:'';?>">
+			        <input type="hidden" name="dist" id="dist" value="<?php echo ($dist)?$dist:'';?>">
+			        <input type="hidden" name="street" id="street" value="<?php echo ($street)?$street:'';?>">
+				</div>
+				<div class="search-area-btn">
+					<input type="button" id="search-area-btn" value="搜餐厅"></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	<div class="rest-select-area">
+		<div class="rest-scroll rest-menu-area" id="rest-menu-area">
+			<ul>
+				<li class="rest-menu-list rest-list-classify">
+					<ul>
+		                <li><a href="javascript:void(0);" data-value="" data-name="category" class="shop-search">全部分类</a></li>
+		                <?php foreach($shop_category as $k=>$name):?>
+						<li><a href="javascript:void(0);" data-value="<?php echo $k;?>" data-name="category" class="shop-search"><?php echo $name;?></a></li>
+		                <?php endforeach;?>
+					</ul>
+				</li>
+				<li class="rest-menu-list rest-list-position">
+					<ul></ul>
+				</li>
+				<li class="rest-menu-list rest-list-condition">
+					<ul>
+						<li><a href="#" class="selected">智能排序</a></li>
+						<li><a href="#">离我最近</a></li>
+						<li><a href="#">评价最高</a></li>
+						<li><a href="#">人气最高</a></li>
+						<li><a href="#">优惠最多</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div class="rest-scroll rest-select-list" id="rest-select-list">
+			<ul></ul>
+		</div>
+	</div>
+
+	<div class="rest-list rest-list-main">
+        <?php foreach($list['data'] as $shop):?>
+		<a href="/wechat/shop/detail/<?php echo $shop->id;?>">
+			<div class="rest-message">
+				<div class="logo">
+					<img src="<?php echo $shop->image;?>">
+				</div>
+				<div class="message">
+					<div class="name">
+						<h4><?php echo $shop->name;?></h4>
+						<em><?php echo $shop->distance;?></em>
+					</div>
+					<div class="detail">
+						<div class="rateit-group">
+							<div class="rateit" data-rateit-backingfld="#evaluate_<?php echo $shop->id;?>" data-rateit-readonly="readonly"></div>
+							<input type="hidden" id="evaluate_<?php echo $shop->id;?>" value="<?php echo $shop->star;?>">
+						</div>
+						<span class="avg">人均：<em>￥<?php echo $shop->avgprice;?></em></span>
+					</div>
+					<p><?php echo $shop->address;?></p>
+				</div>
+			</div>
+		</a>
+        <?php endforeach;?>		
+	</div>
+    <?php if($list['pager']['page'] < $list['pager']['pages']):?>
+	<div class="page">
+		<button id="rest-page" data-name="page" data-value="1">
+			<span>点击加载下一页</span>
+		</button>
+	</div>
+    <?php endif;?>
+	<?php include 'footer.html';?>
+	
+	<script type="text/javascript" src="/theme/wechat/assets/plugin/rateit/jquery.rateit.min.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/city.min.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/shopList.min.js?v=06041803"></script>
+</body>
+</html>

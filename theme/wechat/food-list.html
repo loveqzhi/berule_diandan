@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title>点餐系统</title>
+</head>
+<body class="order-body">
+	<div class="wrap order-wrap" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+					<i class="iconfont">H</i>返回
+				</div>
+				<h4 class="one-line"><?php echo $shop->name;?></h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+
+		<div class="order" id="index-section">
+			<div class="order-area order-menu">
+				<h4>菜品分类</h4>
+				<div class="order-scorll-area" id="scroll-order-menu">
+					<ul id="order-menu">
+                        <li>
+		                    <span data-tid="" class="selected">全部</span>
+		                </li>
+		                <?php foreach($taxonomy_food as $tax):?>
+						<li>
+		                    <span data-tid="<?php echo $tax->tid;?>"><?php echo $tax->name;?></span>
+		                </li>
+		                <?php endforeach;?>
+
+					</ul>
+				</div>
+			</div>
+			<div class="order-area order-list">
+				<h4 id="order-class">全部</h4>
+				<div  class="order-scorll-area" id="scroll-order-list">
+					<ul id="order-list">
+		                <?php foreach($list['data'] as $food):?>
+						<li class="tid-<?php echo $food->tid;?>">
+							<div class="logo">
+								<img src="<?php echo $food->image;?>">
+							</div>
+							<div class="message">
+								<div class="message-bar">
+									<p><?php echo $food->name;?></p>
+									<span class="price">￥<?php echo $food->price;?></span>
+								</div>
+								<div class="message-bar">
+									<span class="star star-1"></span>
+								</div>
+								<div class="message-bar">
+									<span class="num">月售：2000份</span>
+									<span class="choose-dish" data-id="<?php echo $food->fid;?>" data-price="<?php echo $food->price;?>" data-name="<?php echo $food->name;?>">+</span>
+								</div>
+							</div>
+						</li>
+		                <?php endforeach;?>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="btn-area human-btn-area">
+			<?php 
+				$dish_num = 0;
+				if($order) {
+					foreach ($order->field_order_food as $key => $value) {
+						$dish_num += $value['number'];
+					}
+				}
+			?>
+			<input type="hidden" name="dish-num" value="<?php echo $dish_num;?>">
+			<input type="hidden" name="dish-order" value="<?php echo ($order && !empty($order))?count($order->field_order_food):0;?>">
+			<div class="shop-cart">
+				<span id="dish-num">0</span>
+			</div>
+			<input type="button" value="选好了" id="send-dish" data-from="<?php echo $from;?>">
+		</div>
+
+		<div  class="dish-list" id="dish-list-scroll">
+			<form id="dish-list">
+			<input type="hidden" name="shop_id" value="<?php echo $shop->id;?>">
+			<?php if($order):?>
+			<input type="hidden" name="id" value="<?php echo $order->id;?>">
+			<?php endif;?>
+				<ul>
+					<?php if($order):?>
+						<?php 
+							foreach ($order->field_order_food as $key => $val) {
+							echo '<li>';
+							echo '<input name="field_order_food['.$key.'][fid]" type="hidden" value="'.$val['fid'].'" class="field_order_food_fid">';
+							echo '<input name="field_order_food['.$key.'][price]" type="hidden" value="'.$val['price'].'"class="field_order_food_price">';
+							echo '<p>'.$list['data'][$val['fid']]->name.'</p><p class="price">￥'.$val['price'].'</p>';
+							echo '<div class="dish-number"><span class="dish-number-sub">-</span><span class="the-dish-num">'.$val['number'].'</span>';
+							echo '<input name="field_order_food['.$key.'][number]" type="hidden" value="'.$val['number'].'" class="field_order_food_number" readonly="readonly">';
+							echo '<span class="dish-number-add">+</span></div></li>';
+
+							}
+						?>
+						
+			
+					<?php endif;?>
+
+					<li>
+						<p>总计</p>
+						<p class="price total-price">￥<?php echo ($order && !empty($order))?(int)$order->total:0;?></p>
+						<div class="dish-number"></div>
+					</li>
+				</ul>
+			</form>
+		</div>
+	</div>
+
+	<?php include 'side-nav.html';?>
+
+	<?php include 'footer.html';?>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/order.min.js?v=06091010"></script>
+</body>
+</html>

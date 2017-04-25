@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php require_once 'common.html';?>
+        <title><?php echo lang('编辑店铺');?></title>
+</head>
+<body>
+    <?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('编辑店铺');?></h1>
+                    </div><!-- /.page-header -->
+                    
+                    <div class="form-horizontal">
+                        <form method="post" action="" enctype="multipart/form-data" id="shop-edit">
+                            <input type="hidden" name="id" value="<?php echo $shop->id;?>">
+                            <input type="hidden" id="from-list" value="<?php echo $_GET['form'];?>">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('店铺名称');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="name" class="form-control" value="<?php echo $shop->name;?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('店铺图片');?></label>
+                                <div class="col-sm-9">
+                                    <input type="hidden" class="image-src_0" name="image" class="form-control" placeholder="" value="<?php echo $shop->image;?>" />
+                                        <span class="avatarUpload" data-id="src_0" id="src_0"><?php echo lang('浏览文件');?></span>
+                                        <img class="imageshow-src_0" style="max-width:300px;max-height:200px;"  src="<?php echo $shop->image;?>"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('简介');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <textarea name="description" class="form-control" rows="3"><?php echo $shop->description;?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('电话');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="tel" class="form-control" value="<?php echo $shop->tel;?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('推荐指数');?></label>
+                                <div class="col-sm-9">
+                                    <!-- <div class="input-group col-sm-9">
+                                        <input type="text" name="star" class="form-control" value="<?php echo $shop->star;?>" />
+                                    </div> -->
+                                    <input type="hidden" name="star" id="star" class="col-sm-9" placeholder="" value="<?php echo $shop->star;?>" />
+                                    <div class='plugin-rateit rateit star24' data-rateit-backingfld='#star'></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('分类');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <select name="category"  class="form-control plugin-chosen">
+                                        <option value=""><?php echo lang('分类');?></option>
+                                        <?php foreach(config()->get('shop_category') as $k=>$name):?>
+                                        <option value="<?php echo $k;?>" <?php echo ($shop->category==$k)?'selected':'';?>><?php echo $name;?></option>
+                                        <?php endforeach;?>
+                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('地区');?></label>
+                                <div class="col-sm-1" style="width:15%">
+                                    <select name="city" id="city" data-next="dist" class="chinapc form-control">
+                                        <option value=""><?php echo lang('城市');?></option>
+                                        <?php foreach($city as $c):?>
+                                        <option value="<?php echo $c['id'];?>" <?php echo ($shop->city==$c['id'])?'selected':'';?>><?php echo $c['name'];?></option>
+                                        <?php endforeach;?>
+                                    </select>
+                                </div>
+                                <div class="col-sm-1" style="width:15%">
+                                    <select name="dist" id="dist" data-next="street" class="chinapc form-control">
+                                        <option value=""><?php echo lang('地区');?></option>
+                                        <?php foreach($dist as $d):?>
+                                        <option value="<?php echo $d['id'];?>" <?php echo ($shop->dist==$d['id'])?'selected':'';?>><?php echo $d['name'];?></option>
+                                        <?php endforeach;?>
+                                    </select>
+                                </div>
+                                <div class="col-sm-1" style="width:15%">
+                                    <select name="street" id="street" class="form-control">
+                                        <option value=""><?php echo lang('街道');?></option>
+                                        <?php foreach($street as $s):?>
+                                        <option value="<?php echo $s['id'];?>" <?php echo ($shop->street==$s['id'])?'selected':'';?>><?php echo $s['name'];?></option>
+                                        <?php endforeach;?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('地址');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="address" class="form-control" value="<?php echo $shop->address;?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('店铺坐标');?></label>
+                                <div class="col-sm-9" style="position:relative;">
+                                    <a class="btn btn-primary" onclick="qqmap_toggle();"><i class="glyphicon glyphicon-map-marker"></i></a>
+                                    <span class="btn btn-default btn-sm">
+                                        <?php echo lang('经度');?>: <input id="lng" name="lng" class="col3-input" value="<?php echo $shop->lng;?>"  />
+                                    </span>
+                                    <span class="btn btn-default btn-sm">
+                                        <?php echo lang('纬度');?>: <input id="lat" name="lat" class="col3-input" value="<?php echo $shop->lat;?>" />
+                                    </span>
+                                    <span class="btn btn-default btn-sm" style="display:none;">
+                                        ZOOM: <input id="zoom" class="col3-input" />
+                                    </span>
+                                    <div id="divmap" style="border:1px solid #ccc;background:#fff;position:absolute;width:550px;height:370px;text-align:center;left:-9999px;top:36px;z-index:100;">
+                                      <div style="height:20px;line-height:20px;">
+                                        <a onclick="qqmap_toggle();" href="###" style="float:right;margin-right:6px;"> <?php echo lang('确认');?></a>
+                                      </div>
+                                      <div style="padding-left:10px;width:535px;text-align:left;height:24px;line-height:24px;font-weight:normal;">
+                                        <?php echo lang('地址');?>: <input id="mapaddr" style="width:220px;" />
+                                        <input type="button" id="qqmap-search-btn" value="<?php echo lang('搜索');?>" />
+                                      </div>
+                                      <div id="container" style="margin:20px 0 0 10px;border:1px solid #ddd;width:525px;height:300px;"></div>      
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('人均消费');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="avgprice" class="form-control" value="<?php echo $shop->avgprice;?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">Wifi</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input name="wifi" class="plugin-switch" type="checkbox" value="1" <?php echo ($shop->wifi ==1)?'checked':'';?>/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">Park</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input name="park" class="plugin-switch" type="checkbox" value="1" <?php echo ($shop->park ==1)?'checked':'';?>/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('交通便捷');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input name="traffic" class="plugin-switch" type="checkbox" value="1" <?php echo ($shop->traffic ==1)?'checked':'';?>/>
+                                    </div>
+                                </div>
+                            </div>                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('详情');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <textarea name="content" class="form-control" rows="3"><?php echo $shop->content;?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix form-actions">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button type="button" class="btn btn-btn shop-edit">
+                                        <i class="fa fa-check"></i>
+                                        <?php echo lang('保存');?>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- /.form-horizontal -->
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+
+        <script>
+        $(function(){
+            $(".chinapc").change(function(){
+                var key = $(this).val();
+                var next = $(this).data('next');
+                if (key) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/city/getbypid",
+                        data: {pid: key},
+                        dataType: "json",
+                        success: function(data){
+                            if (data.status=="200") {
+                            var html = '<option value=""> Seleted </option>';
+                            $(data.data).each(function(i,e){
+                                html += "<option value="+e.id+">"+e.name+"</option>";
+                            });
+                            $("#"+next).html(html);
+                            
+                          }
+                        }
+                    });
+                }
+            });
+            $(".shop-edit").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/shop/update",
+                    data: $("#shop-edit").serialize(),
+                    dataType: "json",
+                    success: function(data){
+                      if (data.status=="success") {
+                          var form_list = $("#form-list").val();
+                          if (form_list=='manager') {
+                            location.href="/admin/manager/shop";
+                          } else {
+                            location.href="/admin/shop/search";
+                          }
+                      } else {
+                         alert(data.msg);
+                         return false;
+                      }
+                    }
+                });
+            });
+        });
+        </script>

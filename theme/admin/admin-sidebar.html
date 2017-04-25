@@ -1,0 +1,13 @@
+            <div class="sidebar" id="sidebar">
+                <ul class="nav nav-subnav">
+                    <?php foreach($menus as $menu):?>
+                        <?php if($menu['active'] == 1):?>
+                            <?php foreach($menu['childs'] as $cmenu):?>
+                    <li <?php echo ($cmenu['active'] == 1)?'class="active"':'';?>>
+                        <a href='<?php echo $cmenu['href'];?>'><i class='fa <?php echo $cmenu['icon'];?>'></i> <?php echo $cmenu['name'];?></a>
+                    </li>
+                            <?php endforeach;?>
+                        <?php endif;?>
+                    <?php endforeach;?>
+                </ul>
+            </div><!-- /.sidebar -->

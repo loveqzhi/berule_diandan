@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title><?php echo lang('编辑用户');?></title>
+<?php require_once 'common.html';?>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('编辑用户');?></h1>
+                    </div><!-- /.page-header -->
+                    
+                    <div class="form-horizontal">
+                        <form method="post" action="/user/update" id="user-edit">
+                            <input type="hidden" name="uid" value="<?php echo $user->uid;?>">
+                           <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('用户名');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="username" class="form-control" placeholder="<?php echo lang('用户名');?>" value="<?php echo $user->username;?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('关联店铺');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9"> 
+                                        <select name="field_user_shop[0][shop_id]" class="shop-search-select2" style="width:100%;">
+                                            <?php if(isset($myshop)):?>
+                                            <option selected="selected" value="<?php echo $myshop->id;?>"><?php echo $myshop->name;?></option>
+                                            <?php endif;?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('电话');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="phone" class="form-control" placeholder="<?php echo lang('电话');?>"  value="<?php echo $user->phone;?>"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('昵称');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" name="nickname" class="form-control" placeholder="<?php echo lang('昵称');?>" value="<?php echo $user->nickname;?>"/>
+                                    </div>
+                                </div>
+                            </div>
+							<div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('性别');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="sex" <?php echo ($user->sex=='M')?'checked':'';?> value="M"> 男
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="sex" <?php echo ($user->sex=='F')?'checked':'';?> value="F"> 女
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('用户角色');?></label>
+                                <div class="col-sm-9">
+                                <?php $uroles = array_column($user->roles,"rid");?>
+                                <?php foreach($roles['data'] as $k=>$role):?>
+                                    <div class="checkbox col-sm-9" style="padding-left:0;">
+                                        <label>
+                                        <input type="checkbox" value="<?php echo $role->rid;?>" 
+                                        name="relation_admin_roles[]" <?php echo in_array($role->rid,$uroles)?'checked':'';?>> <?php echo $k.". ".$role->name;?> 
+                                    </label>
+                                    </div>
+                                <?php endforeach;?>
+                                </div>                               
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"><?php echo lang('状态');?></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group col-sm-9">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="status" <?php echo ($user->status=='1')?'checked':'';?> value="1"> <?php echo lang('正常');?>
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="status" <?php echo ($user->status=='0')?'checked':'';?> value="0"> <?php echo lang('锁定');?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix form-actions">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button type="button" class="btn btn-btn user-edit">
+                                        <i class="fa fa-check"></i>
+                                        <?php echo lang('保存');?>
+                                    </button>
+                                    <button type="reset" class="btn btn-white" style="margin-left:10px;">
+                                        <i class="fa fa-undo"></i>
+                                        <?php echo lang('重置');?>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- /.form-horizontal -->
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+    
+
+        <script type="text/javascript">
+            $(function(){
+                // $(".shop-chosen").chosen();
+
+                // $(".chosen-drop-search").bind('input propertychange', function() {
+                //     var current = $(this),
+                //         val = current.val();
+
+                //     if (val) {
+                //         $.ajax({
+                //             type: "POST",
+                //             url: "/admin/shop/suggest",
+                //             data: {name: val},
+                //             dataType: "json",
+                //             success: function(data) {
+                //                 if (data.status == "success") {
+                //                     var i = 1,
+                //                         opHtml = '<option value="">选择店铺</option>',
+                //                         liHtml = '<li class="active-result result-selected" style="" data-option-array-index="0">选择店铺</li>'; 
+                //                     $.each(data.data, function() {
+                //                         opHtml += '<option value="' + this.id +'">' + this.name + '</option>';
+                //                         liHtml += '<li class="active-result result-selected" style="" data-option-array-index="'+ i +'">'+ this.name +'</li>';
+                //                     });
+
+                //                     current.parent().next().html(liHtml);
+                //                     current.parents(".chosen-container").prev().html(opHtml).trigger("chosen:updated");
+                //                     current.val(val);
+                //                 } else {
+                //                     alert(data.msg);
+                //                     return false;
+                //                 }
+                //             }
+                //         });
+                //     };
+                // });
+
+                
+
+                $(".user-edit").click(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/admin/user/update",
+                        data: $("#user-edit").serialize(),
+                        dataType: "json",
+                        success: function(data){
+                          if (data.status=="success") {
+                              location.href="/admin/user/search";
+                          } else {
+                             alert(data.msg);
+                             return false;
+                          }
+                        }
+                    });
+                });
+            });
+        </script>

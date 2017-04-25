@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php require_once 'common.html';?>
+    <title><?php echo lang('会员列表');?></title>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('微信关注会员');?></h1>
+                    </div><!-- /.page-header -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+							<a href="javascript:void(0)" data-token="<?php echo $refresh_token;?>" data-href="/admin/wxuser/refresh" class="wxuser-refresh btn btn-btn btn-add"><?php echo lang('刷新用户');?></a>
+                            <div class="pagination-right">				
+                                <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/wxuser/search'));?>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th>&nbsp;</th>
+                                        <th><?php echo lang('头像');?></th>
+                                        <th><?php echo lang('姓名');?></th>
+                                        <th><?php echo lang('性别');?></th>
+                                        <th><?php echo lang('来自');?></th>
+                                        <th><?php echo lang('关注时间');?></th>
+                                        <th><?php echo lang('操作');?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($list['data'] as $k=>$data):?>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td><img src="<?php echo $data->headimgurl;?>" style="max-width:80px"></td>
+                                        <td><?php echo $data->username;?></td>
+                                        <td><?php echo ($data->sex==1)?'男':'女';?></td>                                        
+                                        <td><?php echo $data->country.$data->province.$data->city;?></td>
+                                        <td><?php echo date('Y-m-d H:i',$data->subscribe_time);?></td>
+                                        <td>
+											<a href="javascript:void(0)" class="sendwechat" data-openid="<?php echo $data->openid;?>" >
+                                                 <i class="fa fa-weixin"></i> <?php echo lang('发消息');?>
+                                            </a>
+                                            <a href="/admin/wxuser/delete/<?php echo $data->wid;?>" class=" btn-default btn-sm confirm">
+                                                <i class="fa fa-pencil-square-o"></i> <?php echo lang('删除');?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach;?>
+                                </tbody>
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th colspan="7" style="text-align:center;">
+                                         <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/wxuser/search'));?>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>                        
+                    </div>
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>			
+        </div>
+        <!-- Modal -->
+		<div class="modal fade" id="sendWechat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" style="width:525px">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title"> 与关注者聊天 </h4>
+			  </div>
+			  <div class="modal-body" style="padding-bottom:2px">
+			  <form  class="form-horizontal" id="sendform" role="form" method="post" >
+				<input type="hidden" name="openid" id="openid">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">发送内容</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" name="msg" id="msg"></textarea>
+					</div>
+				</div>
+			 			
+			  </div>
+			  <div class="modal-footer">        
+				<button type="button" class="btn btn-primary" id="sendmessage">发 送</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+			  </div>
+			  </form>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+        <?php require_once 'footer.html';?>
+	<script type="text/javascript">
+		$(function(){
+			$(".wxuser-refresh").click(function(){
+				var toekn = $(this).data('token');
+				var btn = $(this);
+				btn.html('正在刷新..');
+			    btn.attr("disabled", true);
+				$.ajax({
+                    type: "POST",
+                    url: "/admin/wxuser/refresh",
+                    data: {refresh_token:toekn},
+                    dataType: "json",
+                    success: function(data){					  
+                      if (data.status=="success") {
+                          location.href="/admin/wxuser/search";
+                      } else {
+                         alert(data.msg);
+                         btn.html('刷新用户');
+                         btn.attr("disabled", false);
+                         return false;
+                      }
+                    }
+                });
+				return false;
+			});
+			$(".sendwechat").click(function(){
+				$("#openid").val($(this).data('openid'));
+				$("#sendWechat").modal();
+			});
+			$("#sendmessage").click(function(){       
+				$.ajax({
+					type: "POST",
+					url: "/admin/wechat/sendmessage",
+					data: $("#sendform").serialize(),
+					dataType: "json",
+					success: function(data){
+					  if (data.status=="success") {
+
+					  } else {
+						 alert(data.msg);
+						 return false;
+					  }
+					}
+				});
+				$("#openid").val('');
+				$("#msg").val('');
+				$("#sendWechat").modal('hide');
+			});
+		});
+	</script>

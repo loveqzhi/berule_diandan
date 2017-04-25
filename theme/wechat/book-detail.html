@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title><?php echo lang('点餐系统');?></title>
+</head>
+<body>
+	<div class="wrap h-bottom" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+						<i class="iconfont">H</i><?php echo lang('返回');?>
+					</div>
+				<h4 class="one-line"><?php echo $shop->name;?></h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+		<div id="index-section">
+			<dl class="out-message">
+				<dt><?php echo lang('订单详情');?></dt>
+				
+                <dd><?php echo lang('预订日期');?>：<?php echo $book->bookdate;?></dd>
+                <dd><?php echo lang('预订时间');?>：<?php echo $book->booktime;?></dd>
+                <dd><?php echo lang('预订人数');?>：<?php echo $book->human;?></dd>
+                <dd><?php echo lang('预订手机');?>：<?php echo $book->telephone;?></dd>
+                <dd><?php echo lang('预订者');?>：<?php echo $book->name;?></dd>
+			</dl>
+
+			<div class="out-shop book-shop">
+				<div class="logo">
+					<i class="iconfont">M</i>
+				</div>
+				<h4 id="shop-address"><?php echo $shop->address;?></h4>
+				<a href="tel:<?php echo $shop->tel;?>">
+					<i class="iconfont">P</i>
+				</a>
+			</div>
+
+			<dl class="out-order">
+                <?php $total_food=0;foreach($order->field_order_food as $food){$total_food+=$food['number'];}?>
+				<dt>
+					<h5><?php echo lang('合计');?></h5>
+					<p><?php echo $total_food;?><?php echo lang('份');?></p>
+					<span>￥ <?php echo $order->total;?></span>
+				</dt>
+                <?php foreach($order->field_order_food as $food):?>
+				<dd>                   
+					<h5><?php echo $food['name'];?></h5>
+					<p><?php echo $food['number'];?></p>
+					<span>￥ <?php echo ($food['number']*$food['price']);?></span>
+				</dd>
+                <?php endforeach;?>
+			</dl>
+			<div class="btn-area human-btn-area">
+			<?php if(in_array($book->status,array(1))):?>
+				<a href="#" class="book-more out-more" id="book-cancel" data-status="5"><?php echo lang('取消预定');?></a>
+			<?php endif;?>
+		    
+		    <?php if(in_array($book->status,array(5))):?>
+				<a href="#" class="book-more out-more" id="book-cancel" data-status="0"><?php echo lang('删除记录');?></a>
+			<?php endif;?>
+			</div>
+		    
+		</div>
+	</div>
+
+	<input type="hidden" value="<?php echo $book->id;?>" id="book-id">
+
+	<?php include 'side-nav.html';?>
+
+	<?php include 'footer.html';?>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/jweixin-1.0.0.js"></script>
+</body>
+</html>
+
+
+<script type="text/javascript">
+
+	$(function() {
+		$("#book-cancel").click(function() {
+			var id = $("#book-id").val(),
+				status = $(this).data("status");
+
+			$.ajax({
+				type: "post",
+				url: "/wechat/book/update",
+				data: {
+					id: id,
+					status: status
+				},
+				dataType: "json",
+				success: function(data) {
+					if (data.status == "success") {
+						location.href = "/wechat/mybook";
+					} else {
+						alert("取消失败");
+					}
+				}
+			});
+		});
+	});
+    
+	wx.config({
+	    debug: false,
+	    appId: '<?php echo $signPackage["appId"];?>',
+	    timestamp: <?php echo $signPackage["timestamp"];?>,
+	    nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+	    signature: '<?php echo $signPackage["signature"];?>',
+	    jsApiList: [
+	    	'checkJsApi',
+	        'onMenuShareTimeline',
+	        'onMenuShareAppMessage',
+	        'onMenuShareQQ',
+	        'onMenuShareWeibo',
+	        'hideMenuItems',
+	        'showMenuItems',
+	        'hideAllNonBaseMenuItem',
+	        'showAllNonBaseMenuItem',
+	        'translateVoice',
+	        'startRecord',
+	        'stopRecord',
+	        'onRecordEnd',
+	        'playVoice',
+	        'pauseVoice',
+	        'stopVoice',
+	        'uploadVoice',
+	        'downloadVoice',
+	        'chooseImage',
+	        'previewImage',
+	        'uploadImage',
+	        'downloadImage',
+	        'getNetworkType',
+	        'openLocation',
+	        'getLocation',
+	        'hideOptionMenu',
+	        'showOptionMenu',
+	        'closeWindow',
+	        'scanQRCode',
+	        'chooseWXPay',
+	        'openProductSpecificView',
+	        'addCard',
+	        'chooseCard',
+	        'openCard'
+	    ]
+	});
+	document.querySelector('#shop-address').onclick = function () {
+	    wx.openLocation({
+			latitude: <?php echo $shop->lat;?>,
+			longitude: <?php echo $shop->lng;?>,
+			name: '<?php echo $shop->name;?>',
+			address: '<?php echo $shop->address;?>',
+			scale: 16,
+			infoUrl: 'http://weixin.qq.com'
+	    });
+	};
+    
+</script>

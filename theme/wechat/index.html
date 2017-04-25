@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<link rel="stylesheet" type="text/css" href="/theme/wechat/assets/plugin/rateit/rateit.css">
+	<title><?php echo lang('点餐系统');?></title>
+</head>
+<body>
+	<div class="wrap" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+				<h4>
+					<?php echo lang('附近餐厅');?>
+					<p><?php echo $location['result']['address'];?></p>
+				</h4>
+				<div class="search-btn" id="search-btn">
+					<i class="iconfont">I</i>
+				</div>
+			</div>
+			
+			<form action="/wechat/shop" method="get">
+				<div class="search-area" id="search-area">
+					<div class="search-back" id="search-back">
+						<i class="iconfont">H</i>
+					</div>
+					<div class="input-area">
+						<input type="search" name="name" id="search-area-input" placeholder="<?php echo lang('输入餐厅名');?>">
+					</div>
+					<div class="search-area-btn">
+						<input type="button" id="search-area-btn" value="<?php echo lang('搜餐厅');?>"></button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div id="index-section">
+			<div class="banner">
+				<ul id="slider">
+					<li><a href="#"><img src="/theme/wechat/assets/images/banner_1.jpg"></a></li>
+					<li><a href="#"><img src="/theme/wechat/assets/images/banner_2.jpg"></a></li>
+					<li><a href="#"><img src="/theme/wechat/assets/images/banner_3.jpg"></a></li>
+				</ul>
+				<ul class="dots">
+					<li class="active">1</li>
+					<li>2</li>
+					<li>3</li>
+				</ul>
+			</div>
+
+			<div class="menu-bar">
+				<div class="col-3">
+					<a href="/wechat/shop">
+						<img src="/theme/wechat/assets/images/rest_logo.png">
+						<p><?php echo lang('找餐厅');?></p>
+					</a>
+				</div>
+				<div class="col-3">
+					<a href="#">
+						<img src="/theme/wechat/assets/images/food_logo.png">
+						<p><?php echo lang('搜美食');?></p>
+					</a>
+				</div>
+				<div class="col-3">
+					<a href="#">
+						<img src="/theme/wechat/assets/images/onsale_logo.png">
+						<p><?php echo lang('捡优惠');?></p>
+					</a>
+				</div>
+			</div>
+
+			<div class="rest-list">
+				<h4>推荐餐厅：</h4>
+				<?php foreach($list['data'] as $shop):?>
+				<a href="/wechat/shop/detail/<?php echo $shop->id;?>">
+					<div class="rest-message">
+						<div class="logo">
+							<img src="<?php echo $shop->image;?>">
+						</div>
+						<div class="message">
+							<div class="name">
+								<h4><?php echo $shop->name;?></h4>
+								<em><?php echo $shop->distance;?></em>
+							</div>
+							<div class="detail">
+								<div class="rateit-group">
+									<div class="rateit" data-rateit-backingfld="#evaluate_<?php echo $shop->id;?>" data-rateit-readonly="readonly"></div>
+									<input type="hidden" id="evaluate_<?php echo $shop->id;?>" value="<?php echo $shop->star;?>">
+								</div>
+								<span>人均：<em>￥<?php echo $shop->avgprice;?></em></span>
+							</div>
+							<p><?php echo $shop->address;?></p>
+						</div>
+					</div>
+				</a>
+		        <?php endforeach;?>
+			</div>
+		</div>
+	</div>
+
+	<?php include 'side-nav.html';?>	
+
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/jquery.min.js"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/global.min.js?v=06091820"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/js/js-min/m_slider.min.js?v=06091820"></script>
+	<script type="text/javascript" src="/theme/wechat/assets/plugin/rateit/jquery.rateit.min.js"></script>
+</body>
+</html>
+

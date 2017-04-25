@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title>点餐系统</title>
+</head>
+<body>
+	<div class="wrap" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+					<i class="iconfont">H</i>返回
+				</div>
+				<h4 class="one-line">我的外卖</h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+		<div id="index-section">
+			<div class="obar-status" id="obar-status">
+				<h4 class="selected" data-status="ing">进行中</h4>
+				<h4 data-status="finish" id="finish">已完成</h4>
+			</div>
+			<ul class="out-list display" id="out-list-ing"></ul>
+			<ul class="out-list" id="out-list-finish"></ul>
+		</div>
+	</div>
+
+	<div id="curtain" class="display"></div>
+
+	<?php include 'side-nav.html';?>	
+
+	<?php include 'footer.html';?>
+</body>
+</html>
+
+<script type="text/javascript">
+
+	var ingTotalPage, finishTotalPage,
+		outHash = window.location.hash || null;
+
+	$(function() {
+		var outHeight = document.documentElement.clientHeight/16,
+			selectstatus = "ing",
+			ingPage = 1,
+			finishPage = 1;
+
+		outHeight -=  6;
+
+		$(".out-list").css("min-height", outHeight + "rem");
+
+		if(outHash && outHash === "#finish") {
+			$("#obar-status h4").removeClass("selected");
+			$(".out-list").removeClass("display");
+			$("#finish").addClass("selected");
+			$("#out-list-finish").addClass("display");
+		};
+
+		outAjax("ing");
+		outAjax("finish");
+
+		$("#obar-status h4").click(function() {
+			if (!$(this).hasClass("selected")) {
+				var that = $(this);
+
+				selectstatus = $(this).data("status");
+
+				document.body.scrollTop = 0;
+
+				$("#curtain").addClass("display");
+				setTimeout(function() {
+					$("#obar-status h4").removeClass("selected");
+					$(".out-list").removeClass("display");
+					that.addClass("selected");
+					$("#out-list-" + selectstatus).addClass("display");
+					$("#curtain").removeClass("display");
+				}, 400);
+			};
+		});
+		
+        $(".out-list").on("click", "li", function(){
+            location.href = $(this).data("href"); 
+        });
+
+        $(window).on("scroll", function() {
+        	var bodyHeight = document.body.scrollHeight/16 - 12,
+        		scrollHeight = $(window).scrollTop()/16 + outHeight;
+
+        	if (scrollHeight >= bodyHeight) {
+        		var	nextpage = selectstatus == "ing" ? ++ingPage : ++finishPage;
+        		if (nextpage <= (selectstatus == "ing" ? ingTotalPage : finishTotalPage)) {
+        			outAjax(selectstatus, nextpage);
+        		};
+        	};
+        });
+	});
+
+	function outAjax(status, page) {
+
+		var intStatus = status == "finish" ? "4,5" : "1,2,3",
+			currentPage = page ? page : 1;
+
+		$.ajax({
+			type: "get",
+			url: "/wechat/mytakeout",
+			data: {
+				status: intStatus,
+				page: currentPage,
+				format: "json"
+			},
+	        dataType: "json",
+			success: function(data) {
+				if (data.status == "success") {
+					if (data.data.pager.total) {
+						var outHtml = '';
+
+						if(status == "ing") {
+							ingTotalPage = data.data.pager.pages;
+						} else {
+							finishTotalPage = data.data.pager.pages;
+						}
+
+						$.each(data.data.data, function() {
+							var outstatus, outtime = outTime(this.created);
+
+							switch(this.status) {
+								case "0":
+									outstatus = "<span class='cancel'>已取消</span>";
+									break;
+								case "1":
+									outstatus = "<span class='ing'>未接单</span><span class='handle' data-id='" +this.id+ "' data-status='0'>取消订单</span>";
+									break;
+								case "2":
+									outstatus = "<span class='ing'>已接单</span>";
+									break;
+								case "3":
+									outstatus = "<span class='ing'>配送中</span><span class='handle' data-id='" +this.id+ "' data-status='4'>确认收货</span>";
+									break;
+								case "4":
+									outstatus = "<span>已完成</span>";
+									break;
+								case "5":
+									outstatus = "<span class='cancel'>下单失败</span><span class='handle' data-id='" +this.id+ "' data-status='0'>删除订单</span>";
+									break;
+								default:
+								 	break;
+							};
+
+							outHtml += '<li data-href="/wechat/takeout/detail/'+ this.id +'">';
+							outHtml += '<p>流水号：'+ this.ordernumber +'</p><div class="detail">';
+							outHtml += '<a href="/wechat/shop/detail/'+ this.shop_id +'"><div class="logo">';
+							outHtml += '<img src="'+ this.shop_image +'"><em></em></div></a>';
+							outHtml += '<div class="message"><h5>'+ this.shop_name +'</h5>';
+							outHtml += '<dl><dt>'+ outtime +'</dt><dt>数量：'+ this.food_number +'</dt>';
+							outHtml += '<dt>￥ '+ this.order_price +'元</dt></dl></div></div>';
+							outHtml += '<div class="status">'+ outstatus +'</div></li>';
+						});
+
+						$("#out-list-"+ status).append(outHtml);
+					} else {
+						$("#out-list-"+ status).addClass("outlist-none").html('<span class="outnone-text">您还没有订单哦！<br> 快去下个单吧！</span>');
+					}
+
+					if (status == ((outHash && outHash.slice(1) === "finish") ? "finish" : "ing") && $("#curtain").hasClass("display")) {
+						$("#curtain").removeClass("display");
+					};
+
+			        $(".handle").off("click").on("click", function(e) {
+
+			        	e.stopPropagation();
+
+			        	var handleId = $(this).data("id"),
+			        		handleStatus = $(this).data("status");
+
+			        	$.ajax({
+			        		type: "post",
+			        		url: "/wechat/takeout/update",
+			        		data: {
+			        			id: handleId,
+			        			status: handleStatus
+			        		},
+				        	dataType: "json",
+			        		success: function(data) {
+			        			if (data.status == "success") {
+			        				location.href = "/wechat/mytakeout/#finish";
+			        			} else {
+			        				alert(data.msg);
+			        			}
+			        		}
+			        	});
+			        });
+				};
+            }
+		});
+	}
+
+	function outTime(time) {
+		var outdate = new Date(parseInt(time)*1000),
+			year = outdate.getFullYear(),   
+			month = outdate.getMonth() + 1,    
+			date = outdate.getDate();
+
+		return year + "-" + month + "-" + date;
+	}
+</script>
+

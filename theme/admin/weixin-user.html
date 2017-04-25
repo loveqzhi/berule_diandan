@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php require_once 'common.html';?>
+    <title><?php echo lang('会员列表');?></title>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('微信关注会员');?></h1>
+                    </div><!-- /.page-header -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="pagination-right">
+                                <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/wechat/user'));?>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th>&nbsp;</th>
+                                        <th><?php echo lang('头像');?></th>
+                                        <th><?php echo lang('姓名');?></th>
+                                        <th><?php echo lang('性别');?></th>
+                                        <th><?php echo lang('来自');?></th>
+                                        <th><?php echo lang('关注时间');?></th>
+                                        <th><?php echo lang('操作');?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($list['data'] as $k=>$data):?>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td><img src="<?php echo $data->headimgurl;?>" style="max-width:80px"></td>
+                                        <td><?php echo $data->username;?></td>
+                                        <td><?php echo ($data->sex==1)?'男':'女';?></td>                                        
+                                        <td><?php echo $data->country.$data->province.$data->city;?></td>
+                                        <td><?php echo date('Y-m-d H:i',$data->subscribe_time);?></td>
+                                        <td>
+                                            <a href="/admin/wechat/user/delete/<?php echo $data->wid;?>" class=" btn-default btn-sm confirm">
+                                                <i class="fa fa-pencil-square-o"></i> <?php echo lang('删除');?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach;?>
+                                </tbody>
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th colspan="7" style="text-align:center;">
+                                         <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/wechat/user'));?>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>                        
+                    </div>
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+        
+        <script type="text/javascript">
+            $(function(){
+                var department_id = "<?php echo isset($gets['department_id'])?$gets['department_id']:1;?>";
+                $(".department-sel").find("option[value='"+department_id+"']").attr("selected",true);
+                $(".department-sel").change(function(){
+                    location.href='/wechat/user/?department_id='+$(this).val();
+                });
+            });
+        </script>

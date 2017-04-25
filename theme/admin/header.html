@@ -1,0 +1,49 @@
+    <nav class="navbar navbar-inverse" role="navigation">
+        <!-- 左上角LOGO 和响应式 -->
+        <div class="navbar-header">                
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toprightmenu">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="fa fa-user fa-fw"></span>
+            </button>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topleftmenu">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="fa fa-bars"></span>
+            </button>
+            <a class="navbar-brand"></a>
+        </div><!-- /.navbar-header -->
+        <!-- 一级导航 -->
+        <ul class="nav navbar-nav collapse navbar-collapse" id="topleftmenu">
+            <?php foreach($menus as $k=>$menu):?>
+            <li <?php echo ($menu['active'] == true)?'class="active"':'';?>>
+                <a href='<?php echo $menu['href'];?>'><i class='fa <?php echo $menu['icon'];?>'></i> <?php echo $menu['name'];?></a>
+            </li>
+            <?php endforeach;?>
+        </ul><!-- /#topleftmenu -->
+        <ul class="nav navbar-nav navbar-right collapse navbar-collapse no-padding" id="toprightmenu">
+            <li><a href="/admin/user/logout"><i class="fa fa-power-off"></i> <?php echo lang('退出');?> </a></li>
+        </ul><!-- /#toprightmenu -->
+    </nav><!-- /nav -->
+    
+    <div class="banners">
+        <div class="banner">
+            <?php $u = $uid = session()->get('user');?>
+            <?php if(!empty($u->field_user_shop)):?>
+            <?php 
+                $qrcode = array(
+                    'appid'     => variable()->get('wxconfig')['appid'],
+                    'appsecret' => md5($u->field_user_shop[0]['shop_id'].variable()->get('wxconfig')['appsecret']),
+                    'shop_id'   => $u->field_user_shop[0]['shop_id'],
+                );
+            ?>
+            <div style="position:fixed;top:60px;right:125px;z-index:9;max-width:85px;text-align:center;">
+                <?php echo '<img src="http://qr.liantu.com/api.php?text='.urlencode("http://diandan.berule.com/wechat/queue/confirm?".http_build_query($qrcode)).'" style="width:100%;">'?>
+                <p style="width:100%;font-size:12px;margin-top:10px;"><?php echo lang('排队拿号');?></p>
+            </div>
+            <?php endif;?>
+            <div style="position:fixed;top:60px;right:10px;z-index:9;max-width:85px;text-align:center;">
+                <img src="/theme/admin/assets/images/qr.jpg" style="width:100%;">
+                <p style="width:100%;font-size:12px;margin-top:10px;"><?php echo lang('关注微信');?></p>
+            </div>
+            
+        </div>
+    </div>

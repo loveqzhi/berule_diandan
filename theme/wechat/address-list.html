@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title><?php echo lang('点餐系统');?></title>
+</head>
+<body>
+	<div class="wrap" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+					<i class="iconfont">H</i><?php echo lang('返回');?>
+				</div>
+				<h4 class="one-line"><?php echo lang('地址管理');?></h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+		<div id="index-section" class="address-list">
+			<ul></ul>
+			<div class="add">
+				<div class="detail" id="add-new">
+					<p class="add-tip"><i class="iconfont">R</i> <?php echo lang('添加地址');?></p>
+				</div>
+				<div class="edit-area add-area">
+					<input class="add-input" type="text" placeholder="<?php echo lang('输入新的地址');?>">
+					<div class="add-confirm"><?php echo lang('确认');?></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<?php include 'side-nav.html';?>	
+
+	<?php include 'footer.html';?>
+</body>
+</html>
+
+<script type="text/javascript">
+	$(function() {
+		var addHeight = document.documentElement.clientHeight/16,
+		touch = {}, deltaX = deltaY = 0;
+
+		$("#index-section").css("min-height", addHeight - 3.125 + "rem");
+
+		$.ajax({
+			type: "get",
+			url: "/wechat/myaddress?format=json",
+			data: {},
+			dataType: "json",
+			success: function(data) {
+				if (data.status == "success") {
+					$.each(data.data, function() {
+						addAddress(this);
+					});
+				};
+			}
+		});
+
+		//新增地址信息
+
+		$("#add-new").click(function() {
+			$(".address-list li").removeClass("edit-status");
+			$(".add").addClass("edit-status");
+			$(".add-input").focus();
+			$(".address-clear").removeClass("display");
+			cancel();
+		});
+
+		$(".add-confirm").click(function() {
+			addNew();
+		});
+
+		$(".add-input").blur(function() {
+			addNew();
+		});
+
+		$(".add-input").focus(function() {
+			if ($(".add-area").hasClass("warn")) {
+				$(".add-area").removeClass("warn");
+				$(this).attr("placeholder", "输入新的地址");
+			};
+		});
+
+		//修改地址信息
+
+		addEditEvent();
+
+		$(".address-list").on("focus", ".edit-input", function() {
+			$(this).next().addClass("display");
+		});
+
+		$(".address-list").on("click", ".address-clear", function() {
+			$(this).prev().val("").focus();
+		});
+
+		$(".address-list").on("click", ".edit-confirm", function() {
+			var el = $(this).parent().parent();
+			editAddress(el);
+		});
+
+		//删除
+
+		$(".address-list").on("touchstart", ".detail p", function(e) {
+			e.preventDefault();
+
+			touch = {};
+			deltaX = deltaY = 0;
+
+			var touches = e.touches || e.originalEvent.touches,
+				touchDate = touches[0];
+
+			touch.x0 = touchDate.pageX;
+			touch.y0 = touchDate.pageY;
+		}).on("touchmove", ".detail p", function(e) {
+			e.preventDefault();
+
+			var touches = e.touches || e.originalEvent.touches,
+				touchDate = touches[0];
+
+			touch.x1 = touchDate.pageX;
+			touch.y1 = touchDate.pageY;
+			deltaX += Math.abs(touch.x0 - touch.x1);
+        	deltaY += Math.abs(touch.y0 - touch.y1);
+		}).on("touchend", ".detail p", function(e) {
+			if (deltaX > 30 && deltaX > deltaY) {
+				var touchWrap = $(this).parent().parent();
+				if ((touch.x0 > touch.x1) && !touchWrap.hasClass("trans-left")) {
+					touchWrap.addClass("trans-left");
+					$(".address-list").off("click", ".edit-btn");
+				} else if ((touch.x0 < touch.x1) && touchWrap.hasClass("trans-left")) {
+					touchWrap.removeClass("trans-left");
+					if ($(".trans-left").length == 0) {
+						addEditEvent();
+					};
+				}
+			};
+		});
+		$(".address-list").on("click", ".delete", function() {
+			if (confirm("确定删除")) {
+				$(this).parent().remove();
+				if ($(".trans-left").length == 0) {
+					addEditEvent();
+				};
+				addressAjax();
+			};
+		});
+	})
+	
+	function addNew() {
+		var addVal = $(".add-input").val(),
+			checkout = checkVal(addVal);
+
+		if (addVal) {
+			if (checkout) {
+				addAddress(addVal);
+				$(".add").removeClass("edit-status");
+				$(".add-input").val("");
+				addressAjax();
+			} else {
+				warn("你已经保存过这个地址哟");
+			}
+		} else {
+			$(".add").removeClass("edit-status");
+		}
+	}	
+
+	function addAddress(newaddress) {
+		var addHtml = '<li><div class="detail"><p>'+ newaddress +'</p><div class="edit-btn">';
+			addHtml +='<i class="iconfont">Q</i></div></div><div class="edit-area">';
+			addHtml +='<input type="text" class="edit-input" value="'+ newaddress +'">';
+			addHtml +='<div class="address-clear"><i class="iconfont">S</i></div>';
+			addHtml +='<div class="edit-confirm">确认</div></div><div class="delete">';
+			addHtml +='<span>删除</span></div></li>';
+
+		$(".address-list ul").append(addHtml);
+	}
+
+	function checkVal(value) {
+
+		var checkout = true;
+
+		$(".detail p").each(function() {
+			if ($(this).html() == value) {
+				checkout = false;
+			};
+		})
+
+		return checkout;
+	}
+
+	function warn(tip) {
+		$(".add-area").addClass("warn");
+		$(".add-input").val("").attr("placeholder", tip);
+	}
+
+	function editAddress(el) {
+		var pHtml = el.find("p").html(),
+			editVal = el.find("input").val(),
+			checkout = checkVal(editVal);
+		if (pHtml != editVal) {
+			if (editVal && checkout) {
+				el.find("p").html(editVal);
+				el.find("input").val(editVal);
+				addressAjax();
+			} else {
+				el.find("input").val(pHtml);
+			}
+		}
+		el.removeClass("edit-status");
+		$(".address-clear").removeClass("display");
+	}
+
+	function cancel() {
+
+		$(".detail p").each(function() {
+			var initVal = "";
+
+			if (!$(this).hasClass("add-tip")) {
+				initVal = $(this).html();
+			};
+
+			$(this).parent().parent().find("input").val(initVal);
+		})
+	}
+
+	function addEditEvent() {
+		$(".address-list").on("click", ".edit-btn", function() {
+			$(".add").removeClass("edit-status");
+			if ($(".add-area").hasClass("warn")) {
+				$(".add-area").removeClass("warn");
+				$(".add-input").attr("placeholder", "输入新的地址");
+			};
+			$(".address-list li").removeClass("edit-status");
+			$(this).parent().parent().addClass("edit-status");
+			$(".address-clear").removeClass("display");
+			cancel();
+		});
+	}
+
+	function addressAjax() {
+		var addressList = {}, k = 0;
+		
+		$(".address-list li p").each(function() {
+			addressList["field_wxuser_address["+ k +"][value]"] = $(this).html();
+			k++;
+		});
+
+		console.log(addressList);
+
+		$.ajax({
+			type: "post",
+			url: "/wechat/wxuser/address/update",
+			data: addressList,
+			dataType: "json",
+			success: function(data) {
+				if (data.status == "success") {
+
+				} else {
+					alert(data.msg);
+				}
+			}
+		});
+	}
+</script>
+

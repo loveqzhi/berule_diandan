@@ -1,0 +1,127 @@
+
+/* 全局 */
+body {
+    font-family: 'Microsoft YaHei', 'Open Sans', sans-serif;
+    font-size: 12px;
+    color: #455c81;
+}
+
+
+.home-bg {
+    position: absolute;
+    z-index: -1;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    overflow: hidden;
+    background: url(../images/bg.jpg) no-repeat fixed;
+    background-size: cover;
+}
+.home-bg  div {
+    position: absolute;
+    z-index: 1;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    overflow: hidden;
+}
+.home-login {
+    z-index: 88;
+    padding:10px 25px;
+    width:400px;
+    margin:80px auto 0px auto;
+    background:#f2f2ff;
+    z-index: 1;
+    border:1px solid #b6bfc9;
+    border-radius: 4px;
+    opacity:0.9;
+}
+.home-login h3 {
+    font-size:20px;
+    margin: 10px 0px 20px 0px;
+}
+.home-login .input-group {
+    margin: 15px 0px;
+    width: 100%;
+}
+.home-login .input-group-addon {
+    background: #6d8db3;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 0px;  
+    border: 1px solid #6d8db3;
+    width: 48px;
+}
+.home-login .form-control {
+    height: 48px;
+    border-radius: 0px;
+    border: 1px solid #b6bfc9;
+    border-left: 0px;
+    font-size: 14px;
+}
+.home-login .bot {
+    height: 25px;
+    padding: 15px 5px;
+    font-size: 12px;
+}
+.home-login .bot .fgtpwd {
+    float: right;
+    color: #666;
+}
+
+
+/* 弹出框 */
+.modal {
+    display: none;
+    background-color: #FFFFFF;
+    left: 50%;
+    margin-left: -200px;
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    z-index: 1080;
+    top: 10%;
+    overflow: hidden;    
+}
+.modal-header {
+    padding: 10px 15px;
+    border-top: 1px solid #3f5371;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+    background: -moz-linear-gradient(center top , #3f5371, #718eba) repeat-x scroll 0 0 #3f5371;
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#3f5371), to(#718eba)) repeat-x scroll 0 0 #3f5371;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#3f5371,endColorstr=#718eba,grandientType=0);
+}
+.modal-header h3 {
+    font-size: 16px;
+    line-height: 28px;
+    margin: 0;
+    color: #ddd;
+}
+.modal-content {
+    padding-top: 15px;
+    border-radius: 0px;
+    border: 0;
+    box-shadow: 0 0 0 #fff;
+}
+
+/* 警告框 */
+.alert-login {
+    border-radius: 0px;
+    padding: 5px 10px;    
+}
+
+.form-actions {
+    margin-bottom: 0px;
+    padding-bottom: 12px;
+}
+
+/* 响应式 */
+@media(max-width:480px) {
+    .home-login {
+        width: 100%;
+        border-radius: 0px;   
+        border: 0px;
+    }
+}

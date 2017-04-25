@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">	
+	<link href="/theme/admin/assets/css/login.css" rel="stylesheet" />
+	<title><?php echo lang('点单系统登录');?></title>
+</head>
+<body>
+	<div id="fullpage">
+		<div class="section section1">
+			<div class="head-bar">
+				<a href="javascript:void(0);" id="login"><?php echo lang('登陆');?></a>
+				<a href="#" id="register"><?php echo lang('免费注册');?></a>
+			</div>
+			<div id="fade-area">
+				<ul>
+					<li style="background-image:url(/theme/admin/assets/images/login_banner1.jpg)"></li>
+					<li style="background-image:url(/theme/admin/assets/images/login_banner2.jpg)"></li>
+					<li style="background-image:url(/theme/admin/assets/images/login_banner3.jpg)"></li>
+				</ul>
+			</div>
+			<form id="login-form">
+				<div class="login-main">
+					<h1><?php echo lang('点餐后台登陆');?></h1>
+					<div class="input-group">
+						<div class="input-label for-login-user"></div>
+						<input type="text" name="username" id="login-user" placeholder="<?php echo lang('用户名');?>">
+					</div>
+					<div class="input-group">
+						<div class="input-label for-login-pass"></div>
+						<input type="password" name="password" id="login-pass" placeholder="<?php echo lang('密码');?>">
+					</div>
+					<div class="get-pass">
+						<a href="#"><?php echo lang('忘记密码');?>？</a>
+					</div>
+					<input type="button" id="login-btn"  value="<?php echo lang('登录');?>">
+				</div>
+			</form>
+		</div>
+		<div class="section section2"></div>
+		<div class="section section3"></div>
+		<div class="section section4"></div>
+		<div class="section section5"></div>
+		<div class="section section6">
+			<div class="table-wrap">
+				<div class="login-wrap">
+					<div class="more-link">
+						<a href="#">关于我们</a>
+						<a href="#">产品介绍</a>
+						<a href="#">常见问题</a>
+						<a href="#">加入我们</a>
+					</div>
+					<div class="more-link">
+						<a href="#">联系我们</a>
+						<a href="#">版权声明</a>
+						<a href="#">使用帮助</a>
+						<a href="#">建议与意见</a>
+					</div>
+					<img src="/theme/admin/assets/images/login_code.png">
+					<div class="clear"></div>
+					<div class="footer-bar">
+						<p>上海贝螺网络科技 ©2014 223.26ms</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="/theme/admin/assets/js/jquery.min.js"></script>
+	<script src="/theme/admin/assets/js/jquery.fullPage.min.js"></script>
+	<script src="/theme/admin/assets/js/fade.min.js"></script>
+	
+</body>
+</html>
+
+<script type="text/javascript">
+		$(function() {
+			$('#fullpage').fullpage({
+				//anchors: ['about', 'sevice', 'process', 'case', 'employ', 'connect'],
+		        scrollingSpeed: 400
+			});
+
+			var loginFade = new Fade("#fade-area", {delay:8000, speed:800});
+
+			$("#login").click(function() {
+				if (!$("#login-form").hasClass("display")) {
+					$("#login-form").addClass("display")
+				};
+			})
+
+			$("#login-btn").click(function() {
+				admin_login();
+			});
+
+			$("#login-form input").keydown(function(e){
+				if (e.keyCode == 13) {
+					admin_login();
+				};
+			});
+		})
+
+        function admin_login(){
+            $.ajax({
+				type: "POST",
+				url: "/admin/user/login",
+				data: $("#login-form").serialize(),
+				dataType: "json",
+				success: function(data){
+					if (data.status=="success") {
+							//alert(data.msg);
+                            if($("#login-user").val() == 'root') {
+                                location.href="/admin/shop/search";
+                            } else {
+                                location.href="/admin/food/search";
+                            }
+					} else {
+							alert(data.msg);
+                            return false;
+					}
+				}
+			});
+        }
+	</script>

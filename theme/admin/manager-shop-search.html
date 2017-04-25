@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php require_once 'common.html';?>
+    <title><?php echo lang('店铺列表');?></title>
+</head>
+<body>
+<?php require_once 'header.html';?>
+        <div class="wrap">
+        <?php require_once 'admin-sidebar.html';?>
+
+            <div class="main-content">
+            
+                <div class="page-content">
+                    
+                    <div class="page-header">
+                        <h1><?php echo lang('店铺列表');?></h1>
+                    </div><!-- /.page-header -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="/admin/shop/add" class="btn btn-btn btn-add" style="float:left;margin-right:12px;"><?php echo lang('新增店铺');?></a>
+                            <form id="search-form" action="/admin/shop/search" method="get" style="float:left;">
+                                <input type="text" name="name" id="input-name" placeholder="<?php echo lang('请输入店家名..');?>">
+                                <input type="submit" value="<?php echo lang('搜索');?>">
+                            </form>
+                            <div class="pagination-right">
+                                <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/shop/search',array('name'=>$name)));?>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th><?php echo lang('图片');?></th>
+                                        <th><?php echo lang('店铺名');?></th>
+                                        <th><?php echo lang('分类');?></th>
+                                        <th><?php echo lang('地区');?></th>
+                                        <th><?php echo lang('电话');?></th>
+                                        <th><?php echo lang('人均');?></th>
+                                        <th><?php echo lang('状态');?></th>
+                                        <th><?php echo lang('操作');?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($list['data'] as $k=>$data):?>
+                                    <tr>
+                                        <td><img src="<?php echo $data->image;?>" style="max-width:100px;"></td>
+                                        <td><?php echo $data->name;?></td>
+                                        <td><?php echo config()->get('shop_category')[$data->category];?></td>
+                                        <td><?php echo $data->city_name.$data->dist_name.$data->street_name;?></td>
+                                        <td><?php echo $data->tel;?></td>
+                                        <td><?php echo $data->avgprice;?></td>
+                                        <td><?php echo ($data->status == '1') ? lang('正常'): lang('锁定');?></td>
+                                        <td>
+                                            <a href="/admin/shop/<?php echo $data->id;?>/taxonomy_food" class=" btn-default btn-sm">
+                                                <i class="fa fa-pencil-square-o"></i> <?php echo lang('食谱');?>
+                                            </a>
+                                            <a href="/admin/shop/<?php echo $data->id;?>/food" class=" btn-default btn-sm">
+                                                <i class="fa fa-pencil-square-o"></i> <?php echo lang('菜谱');?>
+                                            </a>
+                                            <a href="/admin/shop/edit/<?php echo $data->id;?>?from=manager" class=" btn-default btn-sm">
+                                                <i class="fa fa-pencil-square-o"></i> <?php echo lang('修改');?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach;?>
+                                </tbody>
+                                
+                                <thead class="thead-heading">
+                                    <tr>
+                                        <th colspan="8" style="text-align:center;">
+                                         <?php echo $app->themePager($list['pager'],$app->request->getUriForPath('/admin/shop/search',array('name'=>$name)));?>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>                        
+                    </div>
+
+                </div>
+            
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+        <?php require_once 'footer.html';?>
+    <script type="text/javascript">   
+        $(function(){
+			$("#input-name").keydown(function(e){
+				if (e.keyCode == 13) {
+                    var name = $(this).val();
+                    if (name) {
+                        location.href = "/admin/manager/shop?name="+name;
+                        
+                    }
+				};
+			});
+        });
+	</script>

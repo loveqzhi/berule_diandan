@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title><?php echo lang('点餐系统');?></title>
+</head>
+<body>
+	<div class="wrap" id="index-wrap">
+		<div class="header">
+			<div class="header-bar">
+				<div class="go-back" id="go-back">
+					<i class="iconfont">H</i><?php echo lang('返回');?>
+				</div>
+				<h4 class="one-line"><?php echo lang('我的预定');?></h4>
+				<div class="nav-btn" id="side-btn">
+					<i class="iconfont">J</i>
+				</div>
+			</div>
+		</div>
+		<div id="index-section">
+			<div class="obar-status" id="obar-status">
+				<h4 class="selected" data-status="ing"><?php echo lang('进行中');?></h4>
+				<h4 data-status="finish" id="finish"><?php echo lang('已完成');?></h4>
+			</div>
+			<ul class="out-list book-list display" id="out-list-ing"></ul>
+			<ul class="out-list book-list" id="out-list-finish"></ul>
+		</div>
+	</div>
+
+	<div id="curtain" class="display"></div>
+
+	<?php include 'side-nav.html';?>	
+
+	<?php include 'footer.html';?>
+</body>
+</html>
+
+<script type="text/javascript">
+
+	var ingTotalPage, finishTotalPage;
+
+	$(function() {
+		var outHeight = document.documentElement.clientHeight/16,
+			selectstatus = "ing",
+			ingPage = 1,
+			finishPage = 1;
+
+		outHeight -=  6;
+
+		$(".out-list").css("min-height", outHeight + "rem");
+
+		outAjax("ing");
+		outAjax("finish");
+
+		$("#obar-status h4").click(function() {
+			if (!$(this).hasClass("selected")) {
+				var that = $(this);
+
+				selectstatus = $(this).data("status");
+
+				document.body.scrollTop = 0;
+
+				$("#curtain").addClass("display");
+				setTimeout(function() {
+					$("#obar-status h4").removeClass("selected");
+					$(".out-list").removeClass("display");
+					that.addClass("selected");
+					$("#out-list-" + selectstatus).addClass("display");
+					$("#curtain").removeClass("display");
+				}, 400);
+			};
+		});
+		
+        $(".out-list").on("click", "li", function(){
+            location.href = $(this).data("href"); 
+        });
+
+        $(window).on("scroll", function() {
+        	var bodyHeight = document.body.scrollHeight/16 - 12,
+        		scrollHeight = $(window).scrollTop()/16 + outHeight;
+
+        	if (scrollHeight >= bodyHeight) {
+        		var	nextpage = selectstatus == "ing" ? ++ingPage : ++finishPage;
+        		if (nextpage <= (selectstatus == "ing" ? ingTotalPage : finishTotalPage)) {
+        			outAjax(selectstatus, nextpage);
+        		};
+        	};
+        });
+	});
+
+	function outAjax(status, page) {
+
+		var intStatus = status == "finish" ? "3,4,5" : "1,2",
+			currentPage = page ? page : 1;
+
+		$.ajax({
+			type: "get",
+			url: "/wechat/mybook",
+			data: {
+				status: intStatus,
+				page: currentPage,
+				format: "json"
+			},
+	        dataType: "json",
+			success: function(data) {
+				if (data.status == "success") {
+					if (data.data.pager.total) {
+						var outHtml = '';
+
+						if(status == "ing") {
+							ingTotalPage = data.data.pager.pages;
+						} else {
+							finishTotalPage = data.data.pager.pages;
+						}
+
+						$.each(data.data.data, function() {
+							var outstatus, bookDian;
+
+							switch(this.status) {
+								case "1":
+									outstatus = "<span class='ing'><?php echo lang('未审核');?></span>";
+									break;
+								case "2":
+									outstatus = "<span><?php echo lang('预定成功');?></span>";
+									break;
+								case "3":
+									outstatus = "<span><?php echo lang('已签到');?></span>";
+									break;
+								case "4":
+									outstatus = "<span class='cancel'><?php echo lang('预定失败');?></span>";
+									break;
+								case "5":
+									outstatus = "<span class='cancel'><?php echo lang('已取消');?></span>";
+									break;
+								default:
+								 	break;
+							};
+
+							bookDian = this.order ? "<span><?php echo lang('已点菜');?></span>" : "";
+
+							outHtml += '<li data-href="/wechat/book/detail/'+ this.id +'">';
+							outHtml += '<div class="detail"><a href="/wechat/shop/detail/'+ this.shop_id +'">';
+							outHtml += '<div class="logo"><img src="'+ this.shop_image +'"><em></em></div></a>';
+							outHtml += '<div class="message"><h5>'+ this.shop_name +'</h5>';
+							outHtml += '<dl><dt>'+ this.bookdate +'</dt><dt>'+ this.booktime +'</dt>';
+							outHtml += '<dt>'+ this.human +'</dt></dl>';
+							outHtml += '<div class="status">'+ outstatus + bookDian +'</div></div></div></li>';
+						});
+
+						$("#out-list-"+ status).append(outHtml);
+					} else {
+						$("#out-list-"+ status).addClass("outlist-none").html('<span class="outnone-text"><?php echo lang('您还没有预定哦');?>！</span>');
+					}
+
+					if (status == "ing" && $("#curtain").hasClass("display")) {
+						$("#curtain").removeClass("display");
+					};
+				};
+            }
+		});
+	}
+</script>
+

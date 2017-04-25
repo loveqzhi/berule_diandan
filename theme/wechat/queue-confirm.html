@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<?php include 'meta.html';?>
+	<title>点餐系统</title>
+</head>
+<body class="h-bottom">
+	<div class="header">
+		<div class="header-bar">
+			<div class="go-back" id="go-back">
+				<i class="iconfont">H</i>返回
+			</div>
+			<h4 class="one-line">排队拿号</h4>
+			<div class="search-btn"></div>
+		</div>
+	</div>
+	
+	<form id="human-register">
+		<input type="hidden" name="shop_id" value="<?php echo $shop_id;?>">
+        <input type="hidden" name="appsecret" value="<?php echo $appsecret;?>">
+		<div class="human-chose">
+			<input type="radio" name="human" value="2人" data-title="散座：1-2人">
+		</div>
+		<div class="human-chose">
+			<input type="radio" name="human" value="4人" data-title="散座：3-4人" checked>
+		</div>
+		<div class="human-chose">
+			<input type="radio" name="human" value="6人" data-title="散座：5-6人">
+		</div>
+		<div class="human-chose">
+			<input type="radio" name="human" value="8人" data-title="散座：7-8人">
+		</div>
+		<div class="human-chose">
+			<input type="radio" name="human" value="8人以上" data-title="散座：8人以上">
+		</div>
+		<div class="btn-area human-btn-area">
+			<input type="button" value="选好了" id="send-human">
+		</div>
+	</form>
+
+	<?php include 'footer.html';?>
+</body>
+</html>
+
+<script type="text/javascript">
+	$(function(){
+		$("input[name=human]").each(function(){
+			var title = $(this).data("title");
+			if ($(this).prop("checked")) {
+				html = '<p class="human-checked">' + title + '<span></span></p>'
+			} else {
+				html = '<p>' + title + '<span></span></p>'
+			}
+			$(this).after(html)
+		})
+
+		$(".human-chose").on("click",function(){
+			var radio = $(this).find("input[name=human]"),
+				p = $(this).find("p");
+			if (radio.prop("checked")) {
+				return false;
+			} else {
+				$(radio).prop("checked",true);
+				$(".human-chose p").removeClass("human-checked");
+				p.addClass("human-checked");
+			}
+		})
+
+		$("#send-human").on("click",function(){
+            var shop_id = $("input[name='shop_id']").val();
+            var human   = $("input[name='human']:checked").val();
+            var appsecret = $("input[name='appsecret']").val();
+			$.ajax({
+                type: "POST",
+                url: "/wechat/queue/save",
+                data: {shop_id:shop_id,human:human,appsecret:appsecret},
+                dataType: "json",
+                success: function(data){
+                  if (data.status=="success") {
+                      location.href="/wechat/index";
+                  } else {
+                     alert(data.msg);
+                     return false;
+                  }
+                }
+            });
+		});
+	})
+</script>
